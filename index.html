@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="zh-Hant" class="js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Re-Bo — Campus Share · Rent · Trade</title>
+  <meta name="description" content="Re-Bo 是北科各系學會的資源共享平台：資源租借、二手交易、拍照留存。Re-Bo keeps it going.">
+  <meta name="theme-color" content="#111111">
+  <meta property="og:title" content="Re-Bo — Campus Share · Rent · Trade">
+  <meta property="og:description" content="各系學會的資源共享平台。Re-Bo keeps it going.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+TC:wght@300;400;500;700&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lenis@1.3.23/dist/lenis.css">
+  <link rel="stylesheet" href="./assets/css/styles.css">
+
+  <script type="importmap">
+    { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.182.0/build/three.module.js" } }
+  </script>
+  <script>
+    /* Fail-safe: if the app never reports ready (CDN blocked, JS error), show plain content. */
+    (function () {
+      var h = document.documentElement;
+      setTimeout(function () {
+        if (!window.__REBO_READY__) { h.classList.remove('js'); h.classList.add('failsafe', 'no-webgl'); }
+      }, 9000);
+    })();
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.3.23/dist/lenis.min.js" defer></script>
+  <script type="module" src="./assets/js/main.js"></script>
+</head>
+<body>
+  <a class="skip" href="#what">跳到主要內容</a>
+
+  <!-- ───────────── Loader ───────────── -->
+  <div id="loader" role="dialog" aria-label="載入中">
+    <canvas id="loader-rings" aria-hidden="true"></canvas>
+    <div class="loader-core">
+      <div id="loader-count" class="loader-count" aria-live="off">000</div>
+      <div id="loader-actions" class="loader-actions">
+        <button id="enter-sound" class="btn btn-ghost" type="button"><i class="sq"></i>進入 Re·Bo</button>
+        <button id="enter-mute" class="link-quiet" type="button">靜音進入</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───────────── Chrome ───────────── -->
+  <header class="nav" id="nav">
+    <a class="logo" id="logo" href="#hero" aria-label="Re·Bo 回到頂端">
+      <svg viewBox="0 0 28 28" width="26" height="26" aria-hidden="true"><path d="M4 22V6h9a5 5 0 0 1 0 10H4m9 0 7 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square"/></svg>
+      <span>RE<b>·</b>BO</span>
+    </a>
+    <nav class="pill" aria-label="主選單">
+      <a href="#what" class="plus">資源<i></i></a>
+      <a href="#roles">角色</a>
+      <a href="#rules" class="plus">規範<i></i></a>
+      <a href="#journey">歷程</a>
+      <a href="#join">加入</a>
+    </nav>
+    <div class="nav-right">
+      <button id="sound-btn" class="icon-btn" type="button" aria-label="聲音開關" aria-pressed="false" title="聲音">
+        <span class="bars" aria-hidden="true"><i></i><i></i><i></i></span>
+      </button>
+      <a class="btn btn-solid" href="https://www.instagram.com/ntut_rebo" target="_blank" rel="noopener"><i class="sq"></i>追蹤 IG</a>
+    </div>
+  </header>
+
+  <div id="cursor" class="cursor" aria-hidden="true"></div>
+  <div class="progress" aria-hidden="true"><i id="progress-bar"></i></div>
+
+  <main id="top">
+    <!-- ───────────── Hero ───────────── -->
+    <section id="hero" class="dark hero" aria-label="Re-Bo">
+      <canvas id="hero-canvas" aria-hidden="true"></canvas>
+      <div class="hero-fallback" aria-hidden="true"></div>
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow mono">NTUT · B20 · 永續公民實踐 · SDGs 9 / 12</p>
+          <h1 class="hero-title">
+            <span class="line"><span>Share what’s</span></span>
+            <span class="line"><span>idle on campus,</span></span>
+            <span class="line"><span>keep it <em>going.</em></span></span>
+          </h1>
+        </div>
+        <div class="hero-side">
+          <p class="hero-lead">整合系學會、社團、科辦與師生的閒置物品。資源租借、二手交易、拍照留存——只做媒合，不經手金錢與物品。</p>
+          <div class="hero-cta">
+            <a class="btn btn-ghost" href="#rules"><i class="sq"></i>閱讀規範</a>
+            <a class="btn btn-solid" href="#what"><i class="sq"></i>瀏覽資源</a>
+          </div>
+          <p class="beta mono"><i class="dot"></i>Beta · MVP 測試中 · 規則為草案</p>
+        </div>
+      </div>
+
+      <div class="marquee" aria-label="使用的技術與關鍵字">
+        <p class="marquee-label mono">Built with what our team trusts</p>
+        <div class="marquee-track" aria-hidden="true">
+          <div class="marquee-row">
+            <span class="wm wm-bold">Flutter</span><span class="wm wm-mono">Supabase</span><span class="wm wm-light">three.js</span><span class="wm wm-bold">GSAP</span><span class="wm wm-mono">Lenis</span><span class="wm wm-sdg"><b>9</b>SDG</span><span class="wm wm-sdg"><b>12</b>SDG</span><span class="wm wm-light">NTUT</span>
+          </div>
+          <div class="marquee-row">
+            <span class="wm wm-bold">Flutter</span><span class="wm wm-mono">Supabase</span><span class="wm wm-light">three.js</span><span class="wm wm-bold">GSAP</span><span class="wm wm-mono">Lenis</span><span class="wm wm-sdg"><b>9</b>SDG</span><span class="wm wm-sdg"><b>12</b>SDG</span><span class="wm wm-light">NTUT</span>
+          </div>
+        </div>
+        <p class="psst mono">Psst — 點一下左上角的 Re·Bo，看看會發生什麼。</p>
+      </div>
+    </section>
+
+    <!-- ───────────── What (sticky switcher) ───────────── -->
+    <section id="what" class="light what">
+      <div class="wrap what-head">
+        <p class="kicker mono">把閒置變成流動，<br>讓借用像預約一樣簡單。</p>
+        <h2 class="display">Built for Campuses Where <em>Sharing</em> is the Habit.</h2>
+      </div>
+
+      <div class="wrap stage" id="stage">
+        <ol class="stage-list" aria-label="功能清單">
+          <li class="on" data-i="0"><button type="button"><span class="num mono">01</span>資源租借</button></li>
+          <li data-i="1"><button type="button"><span class="num mono">02</span>預約到歸還</button></li>
+          <li data-i="2"><button type="button"><span class="num mono">03</span>二手交易<small class="tag">規劃中</small></button></li>
+          <li data-i="3"><button type="button"><span class="num mono">04</span>規則試算</button></li>
+        </ol>
+
+        <div class="stage-panels">
+          <!-- A · distortion -->
+          <article class="panel is-active" data-i="0">
+            <div class="p-media distort">
+              <canvas id="distort-canvas" aria-label="資源預覽：帳篷、音響設備、活動桌椅、專業書籍" role="img"></canvas>
+              <div class="tabs" role="tablist" aria-label="資源類別">
+                <button type="button" class="on" data-t="0">帳篷</button>
+                <button type="button" data-t="1">音響</button>
+                <button type="button" data-t="2">桌椅</button>
+                <button type="button" data-t="3">書籍</button>
+              </div>
+              <span class="p-label mono" id="distort-label">Resource Preview · 01 / 04</span>
+            </div>
+            <div class="p-cap">
+              <h3>Every resource, already in reach.</h3>
+              <p>帳篷、音響設備、活動桌椅、專業書籍。出借方在上限內自訂租期與租金（押金規則規劃中），線上預約，確認後鎖定條件。</p>
+            </div>
+          </article>
+
+          <!-- B · terminal -->
+          <article class="panel" data-i="1">
+            <div class="p-media term-grid">
+              <div class="pane pane-term">
+                <header class="pane-bar mono"><span>reservation flow</span><em>示意</em></header>
+                <pre class="term mono" id="term" aria-label="預約流程示意">
+<span class="l"><b class="pr">$</b> rebo reserve --item "帳篷" --from 12/03 --to 12/05</span>
+<span class="l ok">✓ 檢查可用性      [start_at, end_at) 半開區間</span>
+<span class="l ok">✓ 鎖定商品列      SELECT … FOR UPDATE</span>
+<span class="l ok">✓ 價格由伺服器重算   單價 × 租期</span>
+<span class="l ok">✓ 預約成立        confirmed · 24 小時內面交</span>
+<span class="l"><b class="pr">$</b> rebo handover --photo</span>
+<span class="l ok">✓ 取件拍照留存</span>
+<span class="l"><b class="pr">$</b> rebo return --inspect</span>
+<span class="l ok">✓ 驗收無誤 → 押金當場退還</span></pre>
+              </div>
+              <div class="pane pane-sql">
+                <header class="pane-bar mono"><span>two bookings overlap when</span></header>
+<pre class="code mono">a.start_at <i>&lt;</i> b.end_at
+<b>AND</b>
+a.end_at   <i>&gt;</i> b.start_at</pre>
+                <p class="pane-note">前一筆結束的那一刻，剛好是下一筆可以開始的時刻。</p>
+              </div>
+              <div class="pane pane-tree">
+                <header class="pane-bar mono"><span>repo / rental_marketplace</span></header>
+<pre class="tree mono">lib/
+├─ screens/reservation/
+│  └─ reservation_screen.dart
+├─ services/
+│  └─ reservation_service.dart
+└─ models/rental_order.dart
+supabase/
+├─ migrations/
+│  └─ …060000_reservation_rpc.sql
+└─ tests/
+   └─ 003_availability_peak_…</pre>
+              </div>
+            </div>
+            <div class="p-cap">
+              <h3>From booking to return, on record.</h3>
+              <p>預約、面交、歸還，每一步都留下紀錄。庫存由資料庫鎖定，同一時段的同一件物品不會被租兩次。</p>
+            </div>
+          </article>
+
+          <!-- C · second-hand -->
+          <article class="panel" data-i="2">
+            <div class="p-media market">
+              <div class="market-stage">
+                <figure class="mk" style="--r:-7deg;--x:-24%;--y:6%">
+                  <div class="mk-img" style="--h:18"></div>
+                  <figcaption><b>工程計算機</b><span class="chip">良好</span><em>NT$ 350</em></figcaption>
+                </figure>
+                <figure class="mk" style="--r:0deg;--x:0%;--y:-4%">
+                  <div class="mk-img" style="--h:210"></div>
+                  <figcaption><b>電路學原文書</b><span class="chip">近全新</span><em>NT$ 280</em></figcaption>
+                </figure>
+                <figure class="mk" style="--r:7deg;--x:24%;--y:6%">
+                  <div class="mk-img" style="--h:150"></div>
+                  <figcaption><b>延長線 3 孔</b><span class="chip warn">堪用 · 附瑕疵照</span><em>NT$ 60</em></figcaption>
+                </figure>
+              </div>
+              <span class="p-label mono">示意畫面 · 規劃中</span>
+            </div>
+            <div class="p-cap">
+              <h3>Look it over, then pay.</h3>
+              <p>校園專屬二手媒合：本人實拍照片、面對面檢查再付款、24 小時售出下架。Re-Bo 只做媒合，不經手金錢與物品。</p>
+            </div>
+          </article>
+
+          <!-- D · calculator -->
+          <article class="panel" data-i="3">
+            <div class="p-media calc" id="calc">
+              <div class="calc-out">
+                <p class="mono calc-k">日租金上限</p>
+                <p class="calc-big"><span class="cur">NT$</span><span id="o-day">0</span></p>
+                <dl class="calc-list">
+                  <div><dt>租金合計（≤ 總額上限）</dt><dd id="o-total">NT$ 0</dd></div>
+                  <div><dt>押金上限</dt><dd id="o-deposit">NT$ 0</dd></div>
+                  <div><dt>逾期費（每天）</dt><dd id="o-late">NT$ 0</dd></div>
+                  <div><dt>最長租期 · 可續借</dt><dd id="o-max">14 天 · +7 天</dd></div>
+                </dl>
+              </div>
+              <form class="calc-in" onsubmit="return false">
+                <label><span class="mono">參考價值</span><output id="v-ref">NT$ 3,000</output>
+                  <input id="in-ref" type="range" min="100" max="20000" step="100" value="3000"></label>
+                <label><span class="mono">租期（天）</span><output id="v-days">3</output>
+                  <input id="in-days" type="range" min="1" max="14" step="1" value="3"></label>
+                <label><span class="mono">日租金</span><output id="v-rent">NT$ 150</output>
+                  <input id="in-rent" type="range" min="0" max="300" step="10" value="150"></label>
+                <div class="seg" role="group" aria-label="物品類型">
+                  <button type="button" class="on" data-kind="general">一般物品</button>
+                  <button type="button" data-kind="big">系學會／社團大型器材</button>
+                </div>
+              </form>
+              <span class="p-label mono">規則草案 · 實際以最終版為準</span>
+            </div>
+            <div class="p-cap">
+              <h3>Rules you can see, and tune.</h3>
+              <p>租金、押金、逾期費都有上限。拖曳看看：一件物品，出借方最多能收多少、逾期會怎麼算。</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────────── Manifesto ───────────── -->
+    <section id="manifesto" class="dark manifesto">
+      <div class="wrap narrow">
+        <p class="statement" id="statement">Re-Bo 把各系學會與社團散落的器材、設備與書籍，集中在同一個平台。<mark>只做媒合</mark>，不經手金錢與物品；取件與歸還<mark>拍照留存</mark>；用借代替買，讓東西<mark>繼續流動</mark>。這不是另一個交易平台，而是校園裡可以被信任的循環。</p>
+      </div>
+    </section>
+
+    <!-- ───────────── Risks ───────────── -->
+    <section id="risks" class="dark risks">
+      <div class="wrap narrow center">
+        <h2 class="display">Good Sharing is Harder Than it <em>Looks</em></h2>
+        <p class="lede">要讓大家敢借、敢出借，難的是借用前後的每一個環節：誰有、借得到嗎、壞了怎麼辦、沒還怎麼辦。Re-Bo 把這些寫進規則與資料庫，而不是留給運氣。下表標示每一項目前的狀態。</p>
+      </div>
+      <div class="wrap">
+        <div class="rk-head mono"><span>The Risks</span><span>What Re-Bo Fixes</span></div>
+        <ul class="rk">
+          <li><span class="rk-l">重複購買<i class="x">✕</i></span><span class="rk-m mono" data-text="盤點各系學會資源，統一搜尋與預約。">盤點各系學會資源，統一搜尋與預約。</span><span class="rk-r"><i class="ok">✓</i>資源盤點<small class="rk-tag live">已上線</small></span></li>
+          <li><span class="rk-l">閒置浪費<i class="x">✕</i></span><span class="rk-m mono" data-text="閒置物品上架出借，歸還後自動回到可借用。">閒置物品上架出借，歸還後自動回到可借用。</span><span class="rk-r"><i class="ok">✓</i>循環租借<small class="rk-tag live">已上線</small></span></li>
+          <li><span class="rk-l">損壞糾紛<i class="x">✕</i></span><span class="rk-m mono" data-text="取件與歸還拍照留存，賠償依參考價值分級。">取件與歸還拍照留存，賠償依參考價值分級。</span><span class="rk-r"><i class="ok soft">✓</i>拍照留存<small class="rk-tag plan">規劃中</small></span></li>
+          <li><span class="rk-l">逾期不還<i class="x">✕</i></span><span class="rk-m mono" data-text="2 小時寬限，之後分級提醒、記違規、停權。">2 小時寬限，之後分級提醒、記違規、停權。</span><span class="rk-r"><i class="ok soft">✓</i>逾期分級<small class="rk-tag draft">草案</small></span></li>
+          <li><span class="rk-l">同時被搶訂<i class="x">✕</i></span><span class="rk-m mono" data-text="資料庫鎖定商品列，同時段不會被租兩次。">資料庫鎖定商品列，同時段不會被租兩次。</span><span class="rk-r"><i class="ok">✓</i>防超賣<small class="rk-tag live">已上線</small></span></li>
+          <li><span class="rk-l">個資外洩<i class="x">✕</i></span><span class="rk-m mono" data-text="帳號刪除後 30 天內完全清除；校內信箱驗證（規劃中）。">帳號刪除後 30 天內完全清除；校內信箱驗證（規劃中）。</span><span class="rk-r"><i class="ok soft">✓</i>個資保護<small class="rk-tag draft">草案</small></span></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ───────────── Roles ───────────── -->
+    <section id="roles" class="dark roles">
+      <div class="wrap">
+        <p class="kicker mono kicker-dark">四種角色 · 權限由資料庫把關</p>
+        <h2 class="display">Four roles. <em>One</em> trust model.</h2>
+        <div class="role-grid">
+          <article class="role" data-tilt>
+            <span class="mono role-n">01</span>
+            <h3>管理員</h3>
+            <p>審核商家申請，並可透過受保護的 RPC 變更使用者的系統角色。沒有任何畫面能讓人自我升級。</p>
+            <span class="role-tag mono">admin</span>
+          </article>
+          <article class="role" data-tilt>
+            <span class="mono role-n">02</span>
+            <h3>審核員</h3>
+            <p>查看待審核商家並核准或取消核准，但不能變更任何人的角色，也不能核准自己申請的商家。名單由專案擁有者在資料庫維護。</p>
+            <span class="role-tag mono">reviewer</span>
+          </article>
+          <article class="role" data-tilt>
+            <span class="mono role-n">03</span>
+            <h3>商家</h3>
+            <p>系學會、社團等通過申請的單位。上架與編輯自己的物品，處理預約訂單。</p>
+            <span class="role-tag mono">merchant</span>
+          </article>
+          <article class="role" data-tilt>
+            <span class="mono role-n">04</span>
+            <h3>一般會員</h3>
+            <p>瀏覽與搜尋、選擇日期預約、查看與取消自己的訂單，也可以申請成為商家。</p>
+            <span class="role-tag mono">member</span>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────────── Rules ───────────── -->
+    <section id="rules" class="light rules">
+      <div class="wrap">
+        <p class="kicker mono">規則草案 · 2026/11/20 · 可再修改</p>
+        <h2 class="display">The Rules, in <em>Numbers.</em></h2>
+
+        <ul class="stats">
+          <li><b class="count" data-to="14">14</b><span class="unit">天</span><p>一般物品最長租期（大型器材 30 天）</p></li>
+          <li><b class="count" data-to="24">24</b><span class="unit">小時</span><p>押金最遲退還時間</p></li>
+          <li><b class="count" data-to="2">2</b><span class="unit">小時</span><p>歸還寬限期，之後才算逾期</p></li>
+          <li><b class="count" data-to="30">30</b><span class="unit">%</span><p>押金上限（相對參考價值）</p></li>
+          <li><b class="count" data-to="3">3</b><span class="unit">工作天</span><p>檢舉案件回覆進度</p></li>
+          <li><b class="count" data-to="30">30</b><span class="unit">天</span><p>帳號刪除後，資料完全清除</p></li>
+        </ul>
+
+        <div class="acc">
+          <details name="rules" open>
+            <summary><span class="mono">01</span>帳號與租借</summary>
+            <ul>
+              <li>北科在學生、學校信箱驗證、一人一帳號；畢業、休學、退學後失效，租借須 7 天內結清。</li>
+              <li>借用中最多 5 件；刊登最多 20 件，每件刊登 30 天自動下架。</li>
+              <li>日租金 ≤ 參考價值 10%，單次總額 ≤ 50%；押金 ≤ 參考價值 30%，一般物品 NT$1,000、貴重器材 NT$3,000 為上限。</li>
+            </ul>
+          </details>
+          <details name="rules">
+            <summary><span class="mono">02</span>逾期與賠償</summary>
+            <ul>
+              <li>逾期費為日租 ×1.5／天；免費出借 NT$50／天；貴重器材（≥ NT$5,000）NT$100／天；總額上限為參考價值 50%。</li>
+              <li>逾期 1 天提醒、3 天記違規 1 次、7 天視為遺失並停權至結清、14 天失聯永久停權。</li>
+              <li>輕微損壞付實際維修費；遺失或全損以參考價值扣折舊，最低 50%、最高 100%；自然耗損不賠。</li>
+            </ul>
+          </details>
+          <details name="rules">
+            <summary><span class="mono">03</span>刊登與面交</summary>
+            <ul>
+              <li>物品狀況必填：全新未拆、近全新、良好、堪用（拍瑕疵）、待維修（大字標示）。</li>
+              <li>每件 1–10 張本人實拍照片，禁用網路圖；預約確認後保留 24 小時，未面交自動取消。</li>
+              <li>面交限校內公共場所，建議 07:00–22:00，驗貨 15 分鐘；二手重大不符須在面交後 24 小時內申訴。</li>
+            </ul>
+          </details>
+          <details name="rules">
+            <summary><span class="mono">04</span>違規、申訴與個資</summary>
+            <ul>
+              <li>90 天內違規累計：第 1 次警告並下架修正，第 2 次停權 7 天，第 3 次停權 30 天並通過測驗復權，第 4 次永久停用。</li>
+              <li>被通知後 7 天內可申訴 1 次；平台提供紀錄並協調，不代賠、不退款、不追款。</li>
+              <li>帳號資料刪除後 30 天完全刪除；交易紀錄保存 180 天；外洩 72 小時內公告。</li>
+            </ul>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────────── Status ───────────── -->
+    <section id="status" class="light status">
+      <div class="wrap">
+        <p class="kicker mono">目前進度 · 以 repo 內容為準（11/17）</p>
+        <h2 class="display">What works <em>today,</em> what’s next.</h2>
+        <div class="status-grid">
+          <div class="st st-done">
+            <h3><i class="dot dot-ok"></i>已完成 · Flutter + Supabase MVP</h3>
+            <ul>
+              <li>註冊 / 登入、目錄瀏覽與搜尋</li>
+              <li>日期與時間預約、可用性檢查、防超賣</li>
+              <li>我的訂單、取消與商家訂單管理</li>
+              <li>商家申請、管理員與審核員審核</li>
+              <li>8 份資料庫 migration、11 項 Flutter 單元測試通過</li>
+              <li>Android 測試 APK 可安裝並開到登入畫面</li>
+            </ul>
+          </div>
+          <div class="st st-next">
+            <h3><i class="dot dot-next"></i>規劃中</h3>
+            <ul>
+              <li>二手交易與 24 小時售出下架</li>
+              <li>商品照片上傳與拍照留存</li>
+              <li>學校信箱限制</li>
+              <li>私訊、檢舉機制</li>
+              <li>押金、逾期與違規規則上線</li>
+              <li>iOS 實機測試與正式發佈</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────────── Journey ───────────── -->
+    <section id="journey" class="dark journey">
+      <div class="wrap jr-head">
+        <p class="kicker mono kicker-dark">專題歷程 · 9/7 → 11/25</p>
+        <h2 class="display">From an idea to <em>a platform.</em></h2>
+      </div>
+      <div class="tl-viewport">
+        <ol class="tl-track">
+          <li><time class="mono">09/07</time><h3>建立群組</h3><p>永續公民實踐課程小組成立。</p></li>
+          <li><time class="mono">11/07</time><h3>討論主題方向</h3><p>決定認真做，開始發想永續議題。</p></li>
+          <li><time class="mono">11/14</time><h3>空氣品質構想</h3><p>曾朝教室 CO₂ / PM2.5 監測發展，完成實踐文案初稿。</p></li>
+          <li><time class="mono">11/16</time><h3>轉向資源共享平台</h3><p>列出功能與分工，寫下第一版規則；Flutter + Supabase MVP 開工。</p></li>
+          <li><time class="mono">11/18</time><h3>加入 GitHub</h3><p>討論檢舉機制，分配 Logo 與公關工作。</p></li>
+          <li><time class="mono">11/19</time><h3>Logo 與角色權限</h3><p>多版本 Logo 發想，規劃管理員、審核員、商家與會員。</p></li>
+          <li><time class="mono">11/20</time><h3>規則詳細版</h3><p>租借、逾期、賠償、刊登、違規與個資規則，與兩份聲明文件。</p></li>
+          <li><time class="mono">11/23</time><h3>宣傳影片</h3><p>完成兩支 14 秒展示影片。</p></li>
+          <li><time class="mono">11/25</time><h3>對外推廣</h3><p>宣傳文案、回饋表單、IG 與 YouTube 帳號。</p></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ───────────── Join / Footer ───────────── -->
+    <section id="join" class="dark join">
+      <div class="wrap">
+        <h2 class="join-title">Re-Bo keeps<br>it <em>going.</em></h2>
+        <p class="join-lead">想讓你的系學會、社團加入，或想搶先體驗測試版本？歡迎來信或私訊我們。</p>
+        <div class="join-cta">
+          <a class="btn btn-solid" href="mailto:rebo.service2026@gmail.com"><i class="sq"></i>寫信給我們</a>
+          <a class="btn btn-ghost" href="https://www.instagram.com/ntut_rebo" target="_blank" rel="noopener"><i class="sq"></i>Instagram</a>
+          <a class="btn btn-ghost" href="https://youtube.com/@ntut_rebo" target="_blank" rel="noopener"><i class="sq"></i>YouTube</a>
+          <span class="btn btn-disabled" aria-disabled="true"><i class="sq"></i>下載 / 體驗連結 · 即將開放</span>
+        </div>
+      </div>
+      <footer class="foot">
+        <div class="wrap foot-grid mono">
+          <p>國立臺北科技大學 · 永續公民實踐 · B20 組</p>
+          <p>SDGs 9 產業創新及基礎建設 · 12 責任消費與生產</p>
+          <p>互動手法靈感來自 Hyperiux Vault；本站程式與內容為原創。</p>
+          <p>© 2026 Re-Bo</p>
+        </div>
+      </footer>
+    </section>
+  </main>
+
+  <noscript><p class="noscript">此頁面的 3D 與動態效果需要 JavaScript；內容仍可正常閱讀。</p></noscript>
+</body>
+</html>

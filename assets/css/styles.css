@@ -409,3 +409,8 @@ main > section:not(#hero) { position: relative; z-index: 2; }
 @media (max-width: 900px) {
   .nav { top: 0; padding-top: 12px; padding-bottom: 22px; background: linear-gradient(to bottom, rgba(17, 17, 17, 0.92), rgba(17, 17, 17, 0)); }
 }
+
+/* ───────── cursor smoke (see assets/js/smoke.js) ───────── */
+.fx { position: fixed; inset: 0; z-index: 50; pointer-events: none; mix-blend-mode: screen; contain: strict; }
+.fx canvas { position: absolute; inset: 0; width: 100%; height: 100%; visibility: hidden; }
+.fx-smoke { filter: blur(14px) saturate(1.25); opacity: 0.95; }

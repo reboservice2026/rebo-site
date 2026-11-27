@@ -3,8 +3,9 @@
 import { initAudio, startAmbient, setMuted, isMuted, blip } from './audio.js';
 import { splitWords, prepareScramble, scramble } from './text-fx.js';
 import { drawResourceTextures } from './art.js';
+import { createSmoke } from './smoke.js';
 
-const $ = (sel, root = document) => root.querySelector(sel);
+const $ =(sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 const html = document.documentElement;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -53,6 +54,8 @@ function boot() {
   let hero = null;
   let distort = null;
   let lenis = null;
+  // cursor smoke: pointer devices only, and not when the visitor asked for less motion
+  const smoke = !coarse && !reduce ? createSmoke() : null;
 
   // initial states for the intro (set from JS: gsap strips inline transforms at identity,
   // which would otherwise let a stylesheet transform take over again)
@@ -176,6 +179,7 @@ function boot() {
       },
     });
     intro();
+    smoke?.setEnabled(true);
   }
 
   function intro() {
@@ -274,6 +278,7 @@ function boot() {
       });
     }
     if (distort && S.stageOn) distort.render(reduce ? 0 : time, S.vel);
+    smoke?.render(time);
   });
   new IntersectionObserver(([e]) => (S.stageOn = e.isIntersecting), { rootMargin: '120px' }).observe($('#stage'));
 
@@ -582,6 +587,7 @@ function boot() {
     state: S,
     get hero() { return hero; },
     get distort() { return distort; },
+    get smoke() { return smoke; },
     lenis,
   };
 

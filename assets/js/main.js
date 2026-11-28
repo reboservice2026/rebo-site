@@ -3,8 +3,9 @@
 import { initAudio, startAmbient, setMuted, isMuted, blip } from './audio.js';
 import { splitWords, prepareScramble, scramble } from './text-fx.js';
 import { drawResourceTextures } from './art.js';
+import { createKineticGrid } from './kinetic-grid.js';
 
-const $ = (sel, root = document) => root.querySelector(sel);
+const $ =(sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 const html = document.documentElement;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -45,6 +46,34 @@ async function plainPreview() {
   }
 }
 
+// Interactive hover buttons: the small leading square grows into a fill while the label swaps for a copy with an arrow.
+// Markup is upgraded here so the plain HTML (square bullet + text) still works without JavaScript.
+function enhanceButtons() {
+  // lucide "arrow-right" glyph; kept inside the function because boot() runs before later top-level consts initialise
+  const ARROW =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
+  $$('.btn:not(.btn-disabled):not(.is-fancy)').forEach((btn) => {
+    const text = btn.textContent.trim();
+    if (!text) return;
+    const dot = document.createElement('span');
+    dot.className = 'btn-dot';
+    dot.setAttribute('aria-hidden', 'true');
+    const label = document.createElement('span');
+    label.className = 'btn-label';
+    label.textContent = text;
+    const hover = document.createElement('span');
+    hover.className = 'btn-hover';
+    hover.setAttribute('aria-hidden', 'true');
+    const copy = document.createElement('span');
+    copy.textContent = text;
+    hover.append(copy);
+    hover.insertAdjacentHTML('beforeend', ARROW);
+    btn.textContent = '';
+    btn.append(dot, label, hover);
+    btn.classList.add('is-fancy');
+  });
+}
+
 function boot() {
   gsap.registerPlugin(ScrollTrigger);
   window.__REBO_READY__ = true;
@@ -53,6 +82,11 @@ function boot() {
   let hero = null;
   let distort = null;
   let lenis = null;
+  // kinetic grid background: warps toward the mouse, ripples on click; static when motion is reduced
+  const grid = createKineticGrid({ interactive: !coarse && !reduce, ripples: !reduce });
+  const heroEl = $('#hero');
+  const whatEl = $('#what');
+  let heroCovered = false;
 
   // initial states for the intro (set from JS: gsap strips inline transforms at identity,
   // which would otherwise let a stylesheet transform take over again)
@@ -146,11 +180,18 @@ function boot() {
     },
     onComplete() {
       actions.classList.add('show');
-      $('#enter-sound')?.focus({ preventScroll: true });
     },
   });
   $('#enter-sound').addEventListener('click', () => enter(true));
   $('#enter-mute').addEventListener('click', () => enter(false));
+  // keyboard: Enter / Space starts the site (no auto-focus, which would show the hover-style fill by default)
+  window.addEventListener('keydown', (e) => {
+    if (S.entered || !actions.classList.contains('show')) return;
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      enter(true);
+    }
+  });
 
   async function enter(withSound) {
     if (S.entered) return;
@@ -223,6 +264,8 @@ function boot() {
 
   $('#logo').addEventListener('click', () => {
     hero?.pulse(1);
+    const lr = $('#logo').getBoundingClientRect();
+    grid?.ripple(lr.left + lr.width / 2, lr.top + lr.height / 2);
     blip(520, 0.12);
     gsap.fromTo('#logo svg', { rotate: 0 }, { rotate: 360, duration: 0.9, ease: 'power3.out' });
   });
@@ -266,26 +309,26 @@ function boot() {
     S.vel *= 0.92;
     const sy = window.scrollY;
     const vh = innerHeight;
-    if (!reduce) {
+    // once the light "what" section has covered the hero, hide the pinned hero so it can't show
+    // through the transparent dark sections further down (and stop rendering it)
+    const covered = whatEl.getBoundingClientRect().top <= 0;
+    if (covered !== heroCovered) {
+      heroCovered = covered;
+      heroEl.style.visibility = covered ? 'hidden' : '';
+    }
+    if (!reduce && !covered) {
       hero?.render(time, {
         scrollP: Math.min(1, sy / vh),
         velocity: S.vel,
-        visible: sy < vh * 1.05 && !document.hidden,
+        visible: !document.hidden,
       });
     }
     if (distort && S.stageOn) distort.render(reduce ? 0 : time, S.vel);
   });
   new IntersectionObserver(([e]) => (S.stageOn = e.isIntersecting), { rootMargin: '120px' }).observe($('#stage'));
 
-  /* ───────── hero scroll ───────── */
-  if (!reduce) {
-    gsap.to('.hero-grid', {
-      yPercent: -10,
-      opacity: 0.25,
-      ease: 'none',
-      scrollTrigger: { trigger: '#what', start: 'top bottom', end: 'top 15%', scrub: true },
-    });
-  }
+  /* ───────── interactive hover buttons ───────── */
+  enhanceButtons();
 
   /* ───────── stage: sticky switcher ───────── */
   const items = $$('.stage-list li');
@@ -582,6 +625,7 @@ function boot() {
     state: S,
     get hero() { return hero; },
     get distort() { return distort; },
+    get grid() { return grid; },
     lenis,
   };
 

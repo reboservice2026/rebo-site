@@ -92,7 +92,11 @@ em { font-style: normal; color: var(--orange); }
 }
 .nav > * { pointer-events: auto; }
 .logo { display: inline-flex; align-items: center; gap: 0.5em; color: var(--orange); font-weight: 700; letter-spacing: 0.16em; font-size: clamp(15px, 1.3vw, 27px); }
-.logo svg { width: 1.45em; height: 1.45em; }
+/* the Re-Bo mark (assets/logo-mark.svg) painted in the current colour through a mask */
+.logo-mark { display: inline-block; flex: none; width: 1.55em; height: 1.4em; }
+@supports ((-webkit-mask: url(a.svg)) or (mask: url(a.svg))) {
+  .logo-mark { background: currentColor; -webkit-mask: url(../logo-mark.svg) center / contain no-repeat; mask: url(../logo-mark.svg) center / contain no-repeat; }
+}
 .logo b { color: inherit; font-weight: 700; opacity: 0.6; }
 .pill {
   position: absolute; left: 50%; transform: translateX(-50%);

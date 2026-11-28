@@ -20,6 +20,8 @@ python -m http.server 8765
 index.html                 頁面內容（繁體中文）與區塊結構
 assets/
 ├─ css/styles.css          版面、深淺主題、響應式
+├─ logo-mark.svg           Re-Bo logo（由原始點陣圖描邊成向量，單色；導覽列用 CSS mask 上色）
+├─ favicon.svg / favicon-32.png / apple-touch-icon.png   分頁與主畫面圖示（橘色 logo、深色底）
 └─ js/
    ├─ main.js              載入畫面、Lenis/GSAP 串接、各區塊動畫、試算器
    ├─ ribbons.js           Hero 3D 絲帶（three.js + 自寫 GLSL）

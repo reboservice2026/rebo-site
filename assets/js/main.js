@@ -267,7 +267,7 @@ function boot() {
     const lr = $('#logo').getBoundingClientRect();
     grid?.ripple(lr.left + lr.width / 2, lr.top + lr.height / 2);
     blip(520, 0.12);
-    gsap.fromTo('#logo svg', { rotate: 0 }, { rotate: 360, duration: 0.9, ease: 'power3.out' });
+    gsap.fromTo('#logo .logo-mark', { rotate: 0 }, { rotate: 360, duration: 0.9, ease: 'power3.out' });
   });
   $$('.hero-cta .btn, .nav-right .btn').forEach((b) => {
     b.addEventListener('pointerenter', () => hero?.setCharge(0.55));

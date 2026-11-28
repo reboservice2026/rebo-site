@@ -75,9 +75,14 @@
 
   <main id="top">
     <!-- ───────────── Hero ───────────── -->
-    <section id="hero" class="dark hero" aria-label="Re-Bo">
-      <canvas id="hero-canvas" aria-hidden="true"></canvas>
-      <div class="hero-fallback" aria-hidden="true"></div>
+    <!-- background layer: stays pinned while the page scrolls over it -->
+    <section id="hero" class="dark hero" aria-hidden="true">
+      <canvas id="hero-canvas"></canvas>
+      <div class="hero-fallback"></div>
+    </section>
+
+    <!-- foreground: the headline block scrolls away normally -->
+    <div class="hero-fg" id="hero-fg">
       <div class="wrap hero-grid">
         <div class="hero-copy">
           <p class="eyebrow mono">NTUT · B20 · 永續公民實踐 · SDGs 9 / 12</p>
@@ -96,7 +101,10 @@
           <p class="beta mono"><i class="dot"></i>Beta · MVP 測試中 · 規則為草案</p>
         </div>
       </div>
+    </div>
 
+    <!-- marquee band: scrolls over the pinned hero background, like a footer line of the fold -->
+    <div class="marq-band">
       <div class="marquee" aria-label="使用的技術與關鍵字">
         <p class="marquee-label mono">Built with what our team trusts</p>
         <div class="marquee-track" aria-hidden="true">
@@ -109,7 +117,7 @@
         </div>
         <p class="psst mono">Psst — 點一下左上角的 Re·Bo，看看會發生什麼。</p>
       </div>
-    </section>
+    </div>
 
     <!-- ───────────── What (sticky switcher) ───────────── -->
     <section id="what" class="light what">
